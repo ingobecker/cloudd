@@ -39,7 +39,7 @@ Clone the `cloudd-hcloud-example` repo, cd into it and create an empty directory
 
 ```Shell
 $ git clone https://github.com/ingobecker/cloudd-hcloud-example.git
-$ cd cloudd-hetzner
+$ cd cloudd-hetzner-example
 $ mkdir leap
 ```
 
