@@ -39,7 +39,7 @@ Clone the `cloudd-hcloud-example` repo, cd into it and create an empty directory
 
 ```Shell
 $ git clone https://github.com/ingobecker/cloudd-hcloud-example.git
-$ cd cloudd-hetzner-example
+$ cd cloudd-hcloud-example
 $ mkdir leap
 ```
 
@@ -78,9 +78,10 @@ dd if=leap.raw of=$VOLUME_DEV
 
 In this example, a cloud image from openSUSE is used which comes with cloud-init installed. The image is downloaded, converted from qcow2 into a raw format and written to the block-device that cloudd supplied to the contrainer.
 
-To run this example, enter your hetzner cloud api token into the `terraform.tfvars`. Set the context to the `leap` directory created above and give your new image a name:
+To run this example, enter your hetzner cloud api token into the `terraform.tfvars`. Set the `context` to the `leap` directory created above and give your new image a name:
 
 ```HCL
+# main.tf
 module "cloudd-hcloud" {
   source = "github.com/ingobecker/cloudd-hcloud"
 
