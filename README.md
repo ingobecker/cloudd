@@ -35,7 +35,7 @@ see [cloudd-install-containers](https://github.com/ingobecker/cloudd-install-con
 
 This example requires a hetzner cloud api token, terraform, curl as well as the `jq` tool to be installed on your system.
 
-Clone the `cloudd-hcloud-example` repo, cd into it and create an empty directory named `leap`:
+Clone the [cloudd-hcloud-example](https://github.com/ingobecker/cloudd-hcloud-example) repo, cd into it and create an empty directory named `leap`:
 
 ```Shell
 $ git clone https://github.com/ingobecker/cloudd-hcloud-example.git
