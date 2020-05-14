@@ -15,11 +15,11 @@ The following cloud providers are supported:
 * [cloudd-hcloud](https://github.com/ingobecker/cloudd-hcloud)
 * [cloudd-libvirt](https://github.com/ingobecker/cloudd-libvirt)
 
-cloudd-libvirt is used mainly for the delevopment of cloudd itself.
+cloudd-libvirt is used mainly for the development of cloudd itself.
 
 ### Operating systems
 
-cloudd ships with intallation containers that let you create images for the following operating systems:
+cloudd ships with installation containers that let you create images for the following operating systems:
 
 * fedora CoreOS
 * rancher k3OS
@@ -97,7 +97,7 @@ $ terraform init
 $ terraform apply
 ```
 
-This might take some time, depending on the size and way your install container and the way it works.
+This might take some time, depending on the size of your container and the way you create the image.
 
 Once finishd, an image id is printed:
 
