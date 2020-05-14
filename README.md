@@ -99,15 +99,21 @@ $ terraform apply
 
 This might take some time, depending on the size and way your install container and the way it works.
 
-Once finishd, an image id is printed.
+Once finishd, an image id is printed:
+
 ```
-OUTPUT
+Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+image_id = 12345678
 ```
+
 This id can be used in other hcloud resources:
 
 ```HCL
 resource "hcloud_server" "test" {
-  image = "OUTPUT"
+  image = "12345678"
 }
 ```
 
