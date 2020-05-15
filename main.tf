@@ -5,7 +5,7 @@ locals {
     ssh_key    = var.ssh_key
     volume_dev = var.volume_dev
     root_dev   = var.root_dev
-    context    = var.context
+    context    = fileexists("${path.module}/install_containers/${var.context}/Containerfile") ? "${path.module}/install_containers/${var.context}" : var.context
   }
 }
 

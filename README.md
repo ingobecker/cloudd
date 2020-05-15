@@ -25,7 +25,7 @@ cloudd ships with installation containers that let you create images for the fol
 * rancher k3OS
 * openSUSE leap jeOS
 
-see [cloudd-install-containers](https://github.com/ingobecker/cloudd-install-containers)
+see [install_containers](https://github.com/ingobecker/cloudd/tree/master/install_containers) directory.
 
 ### Mix and match..
 
@@ -33,60 +33,24 @@ see [cloudd-install-containers](https://github.com/ingobecker/cloudd-install-con
 
 ## Quickstart
 
-This example requires a hetzner cloud api token, terraform, curl as well as the `jq` tool to be installed on your system.
+ In this example, we will build a Fedora coreOS image on hetzner cloud. This example requires a hetzner cloud api token, terraform, curl as well as the `jq` tool to be installed on your system.
 
-Clone the [cloudd-hcloud-example](https://github.com/ingobecker/cloudd-hcloud-example) repo, cd into it and create an empty directory named `leap`:
+Clone the [cloudd-hcloud-example](https://github.com/ingobecker/cloudd-hcloud-example) repo and cd into it:
 
 ```Shell
 $ git clone https://github.com/ingobecker/cloudd-hcloud-example.git
 $ cd cloudd-hcloud-example
-$ mkdir leap
 ```
 
-Create an install container by writing a `Containerfile` with the following content:
-
-```Dockerfile
-# leap/Containerfile
-FROM ubuntu:focal
-
-RUN apt-get update && apt-get install -y curl ca-certificates qemu-utils
-COPY install.sh .
-ENTRYPOINT ["sh", "install.sh"]
-
-LABEL RUN "podman run --privileged \
-                 --rm \
-                 -v /dev:/dev \
-                 -v /run/udev:/run/udev \
-                 IMAGE"
-```
-
-When cloudd runs the install container, it passes the path of a block-device to the entrypoint. The install containers job is to install the operating system to this device using any tools appropriate.
-
-The way the container is run can be customized using the mandatory `RUN` runlabel. It's always a good idea to run the container `--privileged` and bind-mount the hosts `/dev` directory into it.
-
-This example uses an ubuntu image and installs `curl` and `qemu-img`. Those tools are needed to create the new image.
-
-```Shell
-# leap/install.sh
-VOLUME_DEV=$1
-
-curl -O http://ftp.tu-chemnitz.de/pub/linux/opensuse/distribution/leap/15.1/jeos/openSUSE-Leap-15.1-JeOS.x86_64-15.1.0-OpenStack-Cloud-Snapshot8.12.17.qcow2
-
-qemu-img convert *.qcow2 leap.raw
-dd if=leap.raw of=$VOLUME_DEV
-```
-
-In this example, a cloud image from openSUSE is used which comes with cloud-init installed. The image is downloaded, converted from qcow2 into a raw format and written to the block-device that cloudd supplied to the contrainer.
-
-To run this example, enter your hetzner cloud api token into the `terraform.tfvars`. Set the `context` to the `leap` directory created above and give your new image a name:
+To run this example, enter your hetzner cloud api token into the `terraform.tfvars`. Cloudd ships with some built-in install containers. To build a Fedora coreOS image set the `context` input variable to `fedora_coreos`. This corresponds to the direcory name of the install containers build context as found in [install_containers](https://github.com/ingobecker/cloudd/tree/master/install_containers).
 
 ```HCL
 # main.tf
 module "cloudd-hcloud" {
   source = "github.com/ingobecker/cloudd-hcloud"
 
-  name = "leap15.1"
-  context = "${path.module}/leap"
+  name = "fedora-coreos"
+  context = "fedora_coreos"
 }
 ```
 
@@ -126,6 +90,67 @@ resource "hcloud_server" "test" {
 ```
 
 Since the `cloudd-hcloud` module uses a hetzner cloud vm as well as an external volume, it makes sense to clean them up, after the image has been created.
+
+## Create a custom image
+
+This example shows how to create a open suse leap image by writging a custom install container.
+
+Follow the instructions from [above](https://github.com/ingobecker/cloudd#quickstart). But before initializing and applying, create a custom install container. Inside the cloned `cloudd-hcloud-example` directory, create a new directory called `leap`:
+
+```
+$ mkdir leap
+```
+
+Create a `Containerfile`:
+
+```Dockerfile
+# leap/Containerfile
+FROM ubuntu:focal
+
+RUN apt-get update && apt-get install -y curl ca-certificates qemu-utils
+COPY install.sh .
+ENTRYPOINT ["sh", "install.sh"]
+
+LABEL RUN "podman run --privileged \
+                 --rm \
+                 -v /dev:/dev \
+                 -v /run/udev:/run/udev \
+                 IMAGE"
+```
+
+When cloudd runs the install container, it passes the path of a block-device to the entrypoint. The install containers job is to install the operating system to this device using any tools appropriate.
+
+The way the container is run can be customized using the mandatory `RUN` runlabel. It's always a good idea to run the container `--privileged` and bind-mount the hosts `/dev` directory into it.
+
+This example uses an ubuntu image and installs `curl` and `qemu-img`. Those tools are needed to create the new image.
+
+```Shell
+# leap/install.sh
+VOLUME_DEV=$1
+
+curl -O http://ftp.tu-chemnitz.de/pub/linux/opensuse/distribution/leap/15.1/jeos/openSUSE-Leap-15.1-JeOS.x86_64-15.1.0-OpenStack-Cloud-Snapshot8.12.17.qcow2
+
+qemu-img convert *.qcow2 leap.raw
+dd if=leap.raw of=$VOLUME_DEV
+```
+
+In this example, a cloud image from openSUSE is used which comes with cloud-init installed. The image is downloaded, converted from qcow2 into a raw format and written to the block-device that cloudd supplied to the contrainer.
+
+Set the `context` input variable to the `leap` directory:
+
+```HCL
+# main.tf
+module "cloudd-hcloud" {
+  source = "github.com/ingobecker/cloudd-hcloud"
+
+  name = "leap15.1"
+  context = "${path.module}/leap"
+}
+```
+
+The `cloudd` modules `context` input variable, besides pointing to a build-in install container as described earlier, can also point to a install containers build context in the local directory.
+
+Run `terraform init` followed by `terraform apply` as show above.
 
 ## How it works
 

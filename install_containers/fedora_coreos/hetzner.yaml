@@ -1,0 +1,6 @@
+variant: fcos
+version: 1.0.0
+ignition:
+  config:
+    replace:
+      source: http://169.254.169.254/hetzner/v1/userdata

@@ -1,0 +1,13 @@
+FROM quay.io/coreos/coreos-installer:release
+
+RUN dnf install -y fcct
+COPY install.sh hetzner.yaml .
+
+ENTRYPOINT ["sh", "install.sh"]
+
+LABEL RUN "podman run --privileged \
+                 --rm \
+                 -v /dev:/dev \
+                 -v /run/udev:/run/udev \
+                 -e VOLUME_DEV \
+                 IMAGE"

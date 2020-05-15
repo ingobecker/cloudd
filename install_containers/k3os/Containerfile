@@ -1,0 +1,20 @@
+FROM ubuntu:focal
+
+RUN apt-get update && \
+    apt-get install -y curl \
+                       ca-certificates \
+                       dosfstools \
+                       parted \
+                       e2fsprogs \
+                       dosfstools \
+                       grub-pc-bin \
+                       grub2-common
+ADD https://raw.githubusercontent.com/rancher/k3os/master/install.sh ./k3os_install.sh
+COPY install.sh config.yaml .
+ENTRYPOINT ["sh", "install.sh"]
+
+LABEL RUN "podman run --privileged \
+                 --rm \
+                 -v /dev:/dev \
+                 -v /run/udev:/run/udev \
+                 IMAGE"
